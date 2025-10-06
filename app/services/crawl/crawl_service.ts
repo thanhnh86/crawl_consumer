@@ -45,7 +45,7 @@ export default class CrawlService {
       })
 
       connected = true
-      console.log('Connected to remote Chrome')
+      // console.log('Connected to remote Chrome')
 
       const page = await browser.newPage()
 
@@ -84,9 +84,8 @@ export default class CrawlService {
       const result = await this.scrapeHotelData(page)
 
       // close the page (but don't close remote browser)
-      console.log('result 2 : ', result)
-      console.log('result 2 length : ', result.length)
-      await page.close()
+      // console.log('result 2 : ', result)
+       await page.close()
 
       return result
     } catch (e: any) {
@@ -124,34 +123,44 @@ export default class CrawlService {
       const availRoomSelector =
           '.uitk-layout-grid.uitk-layout-grid-has-auto-columns.uitk-layout-grid-has-columns-by-auto_fill.uitk-layout-grid-has-columns-using-auto-grid.uitk-layout-grid-has-space.uitk-layout-grid-display-grid.uitk-layout-grid-justify-content-start.uitk-spacing.uitk-spacing-margin-small-inline-three.uitk-spacing-margin-medium-inline-unset'
       const hotelRoomsName = Array.from(
-          document.querySelectorAll(`${availRoomSelector} .uitk-heading.uitk-heading-3.uitk-type-style-headline-extra-large`)
+          document.querySelectorAll(`${availRoomSelector} .uitk-heading.uitk-heading-6`)
       ).map((hotel) => hotel.textContent?.trim() || null)
 
       const xpathHotelName =
           '/html/body/div[2]/div[1]/div/div/main/div/div/section/div[1]/div/div/div[2]/div/div[3]/div[1]/div/div/div[1]/div/div[1]/div/h1'
 
-      const hotelNameElement = document.evaluate(
-        xpathHotelName,
-        document,
-        null,
-        XPathResult.FIRST_ORDERED_NODE_TYPE,
-        null
+      const xpathHotelName2 =
+          '/html/body/div[2]/div[1]/div/div/main/div/div/section/div[1]/div/div/div[2]/div/div[3]/div[1]/div/div[1]/div[1]/div[1]/div/div/div[1]/div/h1'
+
+      let hotelNameElement = document.evaluate(
+          xpathHotelName,
+          document,
+          null,
+          XPathResult.FIRST_ORDERED_NODE_TYPE,
+          null
       ).singleNodeValue
 
+      if (!hotelNameElement) {
+        hotelNameElement = document.evaluate(
+            xpathHotelName2,
+            document,
+            null,
+            XPathResult.FIRST_ORDERED_NODE_TYPE,
+            null
+        ).singleNodeValue
+      }
       const hotelName = hotelNameElement ? hotelNameElement.textContent?.trim() || null : null
-      console.log(hotelName)
 
 
       const hotelRoomsPrice = Array.from(
         document.querySelectorAll(
-          `${availRoomSelector} [data-test-id="price-summary"] div > div:nth-child(2) .uitk-text.uitk-type-end.uitk-type-300.uitk-text-default-theme`
+          `${availRoomSelector} [data-stid="price-summary"] div > div:nth-child(2) .uitk-text.uitk-type-end.uitk-type-300.uitk-text-default-theme`
         )
       ).map((price) => {
         const rawPrice = price.textContent?.trim() || null
         const numericMatch = rawPrice?.match(/\d+([.,]\d+)*/)?.[0] || null
         return numericMatch ? Number.parseInt(numericMatch.replace(/[.,]/g, ''), 10) : null
       })
-      console.log(hotelRoomsPrice)
 
       const hotelRoomsDetails = Array.from(
           document.querySelectorAll(
@@ -162,7 +171,6 @@ export default class CrawlService {
             .map((child) => child.textContent?.trim())
             .filter(Boolean)
       })
-      console.log(hotelRoomsDetails)
 
       return hotelRoomsName.map((roomName, index) => ({
         hotelName: hotelName,

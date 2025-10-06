@@ -61,4 +61,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   RABBITMQ_PREFETCH: Env.schema.number(),
   RABBITMQ_CHANNEL_NAME: Env.schema.string(),
   RABBITMQ_CHANNEL_NAME_2: Env.schema.string(),
+
+  REMOTE_CHROME_URL: Env.schema.string(),
 })

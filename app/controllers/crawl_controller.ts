@@ -76,7 +76,6 @@ export default class CrawlController {
         status: CrawlResultEnum.SUCCESS,
         proxyId: env.get('PROXY_NAME'),
       })
-      // console.log('finish job : ', url + checkin)
     } else {
       const data = {
         url,
@@ -93,7 +92,6 @@ export default class CrawlController {
         status: CrawlResultEnum.FAIL,
         proxyId: env.get('PROXY_NAME'),
       })
-      // console.log('nothing', url + checkin)
     }
   }
 

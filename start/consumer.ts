@@ -21,7 +21,7 @@ const CHANNEL_NAME2 = env.get('RABBITMQ_CHANNEL_NAME_2')
 const BATCH_SIZE = env.get('RABBITMQ_PREFETCH')
 
 const PROXY_ID: string = proxyQuery.proxyId
-const PROXY_WAIT_TIME: number = proxyQuery.proxyWaitTime
+// const PROXY_WAIT_TIME: number = proxyQuery.proxyWaitTime
 const PROXY_API_URL: string = proxyQuery.proxyApiUrl
 const PROXY_TOKEN: string = proxyQuery.proxyToken
 
@@ -49,15 +49,15 @@ async function startProcess(): Promise<void> {
 async function processBatch(): Promise<void> {
   const messagePromises: Promise<void>[] = []
 
-  const lastProxyTime = await getLastProxyChangeTime()
-  const currentTime = Date.now()
-  if (lastProxyTime && currentTime - lastProxyTime < PROXY_WAIT_TIME) {
-    const waitTime = PROXY_WAIT_TIME - (currentTime - lastProxyTime)
-    console.log(
-      `Proxy changed recently. Waiting for ${waitTime / 1000} seconds before continuing...`
-    )
-    await delay(waitTime)
-  }
+  // const lastProxyTime = await getLastProxyChangeTime()
+  // const currentTime = Date.now()
+  // if (lastProxyTime && currentTime - lastProxyTime < PROXY_WAIT_TIME) {
+  //   const waitTime = PROXY_WAIT_TIME - (currentTime - lastProxyTime)
+  //   console.log(
+  //     `Proxy changed recently. Waiting for ${waitTime / 1000} seconds before continuing...`
+  //   )
+  //   await delay(waitTime)
+  // }
   console.log(
     `Tien hanh cao...: ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`
   )
@@ -101,8 +101,8 @@ async function processMessage(message: GetMessage): Promise<void> {
     const { default: CrawlController } = await import('#controllers/crawl_controller')
     const data = JSON.parse(message.content.toString())
 
-    console.log('Waiting 5 seconds before crawling...')
-    await delay(5000)
+    console.log('Waiting 4 seconds before crawling...')
+    await delay(4000)
     const checkinDate = DateTime.fromFormat(data.checkin, 'dd-MM-yyyy')
     const today = DateTime.now().startOf('day')
     if (checkinDate < today) {
@@ -152,23 +152,23 @@ async function changeProxy(): Promise<void> {
  * Fetch the last proxy change time from the database.
  * @returns Last proxy change timestamp or null
  */
-async function getLastProxyChangeTime(): Promise<number | null> {
-  try {
-    const result = await Setting.query().where('key', PROXY_ID).select('value').first()
-
-    if (result === null) {
-      await Setting.create({
-        key: PROXY_ID,
-        value: Date.now().toString(),
-      })
-    }
-
-    return result ? Number(result.value) : null
-  } catch (error) {
-    console.error('Error fetching proxy last change time:', error)
-    return null
-  }
-}
+// async function getLastProxyChangeTime(): Promise<number | null> {
+//   try {
+//     const result = await Setting.query().where('key', PROXY_ID).select('value').first()
+//
+//     if (result === null) {
+//       await Setting.create({
+//         key: PROXY_ID,
+//         value: Date.now().toString(),
+//       })
+//     }
+//
+//     return result ? Number(result.value) : null
+//   } catch (error) {
+//     console.error('Error fetching proxy last change time:', error)
+//     return null
+//   }
+// }
 
 /**
  * Update the last proxy change time in the database.
